@@ -1,0 +1,16 @@
+/* exerciselist-header */
+.exerciselist-header>input{
+    margin-bottom: 2rem;
+    width:60%;
+    height:30px;
+}
+
+
+/* exerciselist-content */
+.exerciselist-content{
+    display:grid;
+    width:100%;
+    grid-template-columns: repeat(3,1fr);
+    gap:1rem;
+    flex-wrap: wrap;
+}
