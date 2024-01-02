@@ -8,6 +8,13 @@ const Exerciselist = () => {
     let [exerciseData,setExerciseData] = useState([]);
     let [updatedExerciseData,setUpdatedExerciseData] = useState([...exerciseData]);
     let [inputText,setInputText] = useState("");
+    let [loading,setLoading] = useState(true); 
+    let [showPage,setShowPage] = useState(20);
+
+    // onclickShowMoreExercise
+    let onclickShowMoreExercise = ()=>{
+        setShowPage(preVal => preVal+20);
+    }
 
     // -------------------fetch exercise data from api------------------------
     useEffect(()=>{
@@ -15,23 +22,32 @@ const Exerciselist = () => {
         async function fetchData(){
             let url = 'https://exercisedb.p.rapidapi.com/exercises';
             
-            const options = { 
-                params: {limit: '20'},
+            const options1 = { 
+                params: {limit: '400'},
+                headers: {
+                    'X-RapidAPI-Key': '4986fb1656msh3ef2babc5c69ce5p1f9345jsn4373e881a9bb',
+                    'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
+                }
+            }
+            const options2 = { 
+                params: {limit: `${showPage}`},
                 headers: {
                     'X-RapidAPI-Key': '4986fb1656msh3ef2babc5c69ce5p1f9345jsn4373e881a9bb',
                     'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
                 }
             }
             try{
-                const response = await axios.get(url,options);
-                setExerciseData(response.data);
-                setUpdatedExerciseData(response.data);
+                const response1 = await axios.get(url,options1); //400 exercise data for filter
+                const response2 = await axios.get(url,options2); //exercise data for showing in screen
+                setExerciseData(response1.data);
+                setUpdatedExerciseData(response2.data);
+                setLoading(false);
             }catch(error){
                 console.log(error);
             }
         }
         fetchData();
-    },[]);
+    },[showPage]);
 
     // --------------------------input given by user------------------------
     let searchInput = (e)=>{
@@ -57,13 +73,18 @@ const Exerciselist = () => {
             <h1>Exercise List</h1>
             <input type="search" value={inputText} placeholder='Search by target,body part, or exercise' onChange={searchInput} />
         </div>
-        <div className="exerciselist-content">
+        {loading ?<p>Loading...</p>: <div className="exerciselist-content-data">
+            <div className="exerciselist-content">
             {
                 updatedExerciseData.map((exercise)=>{
                     return <Exercisecard {...exercise} key={exercise.id}/>
                 })
             }
-        </div>
+            </div>
+            
+            <button onClick={onclickShowMoreExercise}>Load More</button>
+        </div>}
+
     </div>
   )
 }
